@@ -1,7 +1,9 @@
-# DeepLabv3Plus-Pytorch (Source: )
+# DeepLabv3Plus-Pytorch
 
 DISCLAIMER BEGIN: 
+
 This is a clone of the repository https://github.com/VainF/DeepLabV3Plus-Pytorch and adapted to my own needs. I explicitly refer you to the original project if you are interested in using DeepLabV3+ for your own purposes.
+
 DISCLAIMER END: 
 
 DeepLabv3, DeepLabv3+ with pretrained models for Pascal VOC & Cityscapes.
