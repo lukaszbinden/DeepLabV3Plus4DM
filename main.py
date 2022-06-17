@@ -77,6 +77,8 @@ def get_argparser():
                         help="print interval of loss (default: 10)")
     parser.add_argument("--val_interval", type=int, default=100,
                         help="epoch interval for eval (default: 100)")
+    parser.add_argument("--val_max_size", type=int, default=500,
+                        help="max size for validation (default: 500)")
     parser.add_argument("--download", action='store_true', default=False,
                         help="download datasets")
 
@@ -146,9 +148,9 @@ def get_dataset(opts):
                             std=[0.229, 0.224, 0.225]),
         ])
 
-        train_dst = Cityscapes(root=opts.data_root,
+        train_dst = Cityscapes(root=os.path.expandvars(opts.data_root),
                                split='train', transform=train_transform)
-        val_dst = Cityscapes(root=opts.data_root,
+        val_dst = Cityscapes(root=os.path.expandvars(opts.data_root),
                              split='val', transform=val_transform)
     return train_dst, val_dst
 
@@ -235,11 +237,12 @@ def main():
         opts.val_batch_size = 1
 
     train_dst, val_dst = get_dataset(opts)
+    val_dst = data.Subset(val_dst, range(val_max_size))
     train_loader = data.DataLoader(
-        train_dst, batch_size=opts.batch_size, shuffle=True, num_workers=0,
+        train_dst, batch_size=opts.batch_size, shuffle=True, num_workers=2,
         drop_last=True)  # drop_last=True to ignore single-image batches.
     val_loader = data.DataLoader(
-        val_dst, batch_size=opts.val_batch_size, shuffle=True, num_workers=0)
+        val_dst, batch_size=opts.val_batch_size, shuffle=True, num_workers=2)
     print("Dataset: %s, Train set: %d, Val set: %d" %
           (opts.dataset, len(train_dst), len(val_dst)))
 
@@ -341,7 +344,7 @@ def main():
             if vis is not None:
                 vis.vis_scalar('Loss', cur_itrs, np_loss)
 
-            if (cur_itrs) % 10 == 0:
+            if (cur_itrs) % opts.print_interval == 0:
                 interval_loss = interval_loss / 10
                 print("Epoch %d, Itrs %d/%d, Loss=%f" %
                       (cur_epochs, cur_itrs, opts.total_itrs, interval_loss))
