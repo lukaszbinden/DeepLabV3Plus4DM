@@ -237,7 +237,7 @@ def main():
         opts.val_batch_size = 1
 
     train_dst, val_dst = get_dataset(opts)
-    val_dst = data.Subset(val_dst, range(val_max_size))
+    val_dst = data.Subset(val_dst, range(opts.val_max_size))
     train_loader = data.DataLoader(
         train_dst, batch_size=opts.batch_size, shuffle=True, num_workers=2,
         drop_last=True)  # drop_last=True to ignore single-image batches.
