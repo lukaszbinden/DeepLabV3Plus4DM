@@ -8,5 +8,15 @@ class PolyLR(_LRScheduler):
         super(PolyLR, self).__init__(optimizer, last_epoch)
     
     def get_lr(self):
-        return [ max( base_lr * ( 1 - self.last_epoch/self.max_iters )**self.power, self.min_lr)
-                for base_lr in self.base_lrs]
+        try:
+            return [ max( base_lr * ( 1 - self.last_epoch/self.max_iters )**self.power, self.min_lr)
+                    for base_lr in self.base_lrs]
+        except TypeError as te:
+            print("Caught error:", te)
+            print(f"base_lr: {base_lr}")
+            print(f"last_epoch: {self.last_epoch}")
+            print(f"max_iters: {self.max_iters}")
+            print(f"power: {self.power}")
+            print(f"min_lr: {self.min_lr}")
+            print(f"base_lrs: {self.base_lrs}")
+            raise te

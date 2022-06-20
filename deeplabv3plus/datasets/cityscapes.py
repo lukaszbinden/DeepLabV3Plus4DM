@@ -78,9 +78,9 @@ class Cityscapes(data.Dataset):
         self.root = os.path.expanduser(root)
         self.mode = 'gtFine'
         self.target_type = target_type
-        self.images_dir = os.path.join(self.root, 'leftImg8bit', split)
+        self.images_dir = os.path.join(self.root, split, 'img')
 
-        self.targets_dir = os.path.join(self.root, self.mode, split)
+        self.targets_dir = os.path.join(self.root, split, 'seg')
         self.transform = transform
 
         self.split = split
@@ -95,21 +95,30 @@ class Cityscapes(data.Dataset):
             raise RuntimeError('Dataset not found or incomplete. Please make sure all required folders for the'
                                ' specified "split" and "mode" are inside the "root" directory')
         
-        for city in os.listdir(self.images_dir):
-            img_dir = os.path.join(self.images_dir, city)
-            target_dir = os.path.join(self.targets_dir, city)
+        # for city in os.listdir(self.images_dir):
+        #     img_dir = os.path.join(self.images_dir, city)
+        #     target_dir = os.path.join(self.targets_dir, city)
+        #
+        #     for file_name in os.listdir(img_dir):
+        #         self.images.append(os.path.join(img_dir, file_name))
+        #         target_name = '{}_{}'.format(file_name.split('_leftImg8bit')[0],
+        #                                      self._get_target_suffix(self.mode, self.target_type))
+        #         self.targets.append(os.path.join(target_dir, target_name))
 
-            for file_name in os.listdir(img_dir):
-                self.images.append(os.path.join(img_dir, file_name))
-                target_name = '{}_{}'.format(file_name.split('_leftImg8bit')[0],
-                                             self._get_target_suffix(self.mode, self.target_type))
-                self.targets.append(os.path.join(target_dir, target_name))
+        img_dir = self.images_dir
+        target_dir = self.targets_dir
+
+        for file_name in os.listdir(img_dir):
+            self.images.append(os.path.join(img_dir, file_name))
+            # target_name = '{}_{}'.format(file_name.split('_leftImg8bit')[0],
+            #                              self._get_target_suffix(self.mode, self.target_type))
+            self.targets.append(os.path.join(target_dir, file_name))
 
     @classmethod
     def encode_target(cls, target):
         result = cls.id_to_train_id[np.array(target)]
-        if 255 in result:
-            print(np.unique(result))
+        # if 255 in result:
+        #     print(np.unique(result))
         return result
 
     @classmethod
@@ -135,7 +144,7 @@ class Cityscapes(data.Dataset):
         target = Image.open(self.targets[index])
         if self.transform:
             image, target = self.transform(image, target)
-        target = self.encode_target(target)
+        target = self.encode_target(target[:, :, 0])
         assert len(np.unique(target)) <= 19, f"{self.targets[index]}"
         return image, target
 

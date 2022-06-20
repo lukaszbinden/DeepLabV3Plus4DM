@@ -203,3 +203,5 @@ cython_debug/
 .ionide
 
 .idea/
+
+**/__pycache__
