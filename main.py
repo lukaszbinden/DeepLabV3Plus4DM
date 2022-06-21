@@ -217,6 +217,10 @@ def main():
     elif opts.dataset.lower() == 'cityscapes':
         opts.num_classes = 19
 
+    print("Args: --------------------->")
+    print(opts)
+    print("Args: ---------------------<")
+
     # Setup visualization
     vis = Visualizer(port=opts.vis_port,
                      env=opts.vis_env) if opts.enable_vis else None
