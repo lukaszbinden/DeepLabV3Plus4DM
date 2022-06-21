@@ -13,7 +13,6 @@ class PolyLR(_LRScheduler):
                     for base_lr in self.base_lrs]
         except TypeError as te:
             print("Caught error:", te)
-            print(f"base_lr: {base_lr}")
             print(f"last_epoch: {self.last_epoch}")
             print(f"max_iters: {self.max_iters}")
             print(f"power: {self.power}")

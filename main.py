@@ -300,6 +300,8 @@ def main():
         if opts.continue_training:
             optimizer.load_state_dict(checkpoint["optimizer_state"])
             scheduler.load_state_dict(checkpoint["scheduler_state"])
+            if opts.lr_policy == 'poly':
+                scheduler.max_iters = opts.total_itrs
             cur_itrs = checkpoint["cur_itrs"]
             best_score = checkpoint['best_score']
             print("Training state restored from %s" % opts.ckpt)
