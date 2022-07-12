@@ -207,3 +207,8 @@ cython_debug/
 **/__pycache__
 
 checkpoints/
+
+results/
+
+deeplabv3plus/network/backbone/__pycache__/
+
