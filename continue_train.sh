@@ -14,13 +14,19 @@
 export NOW=$( date '+%F-%H-%M-%S' )
 
 
-echo "Copying training data to ${TMPDIR}..."
-mkdir $TMPDIR/cityscapes_toy
-cp /storage/workspaces/artorg_aimi/ws_00000/lukaszbinden/datasets/cityscapes_toy.tar.gz $TMPDIR/cityscapes_toy
-## /storage/homefs/lz20w714/aimi_storage/lukaszbinden/datasets
-## (ddpm) [lz20w714@submit02 datasets]$ tar -cvf cityscapes_toy.tar.gz cityscapes_toy/
-tar -xf $TMPDIR/cityscapes_toy/cityscapes_toy.tar.gz -C $TMPDIR/.
+#  echo "Copying training data to ${TMPDIR}..."
+#  mkdir $TMPDIR/cityscapes_toy
+#  cp /storage/workspaces/artorg_aimi/ws_00000/lukaszbinden/datasets/cityscapes_toy.tar.gz $TMPDIR/cityscapes_toy
+#  ## /storage/homefs/lz20w714/aimi_storage/lukaszbinden/datasets
+#  ## (ddpm) [lz20w714@submit02 datasets]$ tar -cvf cityscapes_toy.tar.gz cityscapes_toy/
+#  tar -xf $TMPDIR/cityscapes_toy/cityscapes_toy.tar.gz -C $TMPDIR/.
 
-python main.py --model deeplabv3plus_mobilenet --dataset cityscapes --gpu_id 0  --lr 0.1  --crop_size 256 --batch_size 48 --output_stride 16 --data_root ${TMPDIR}/cityscapes_toy/ --print_interval 500 --val_interval 5000 --total_itrs 300000 --ckpt checkpoints/latest_deeplabv3plus_mobilenet_cityscapes_os16.pth --save_val_results --val_max_size 500 --continue_training
+echo "Copying training data to ${TMPDIR}..."
+mkdir $TMPDIR/cityscapes_rbf2_rc512
+cp /storage/workspaces/artorg_aimi/ws_00000/lukaszbinden/datasets/cityscapes_rbf2_rc512/cityscapes_rbf2_rc512.tar.gz $TMPDIR/cityscapes_rbf2_rc512/.
+tar -xf $TMPDIR/cityscapes_rbf2_rc512/cityscapes_rbf2_rc512.tar.gz -C $TMPDIR/cityscapes_rbf2_rc512/.
+
+
+python main.py --model deeplabv3plus_mobilenet --dataset cityscapes --gpu_id 0  --lr 0.1  --crop_size 512 --batch_size 32 --output_stride 16 --data_root ${TMPDIR}/cityscapes_rbf2_rc512/ --print_interval 500 --val_interval 5000 --total_itrs 300000 --ckpt checkpoints/latest_deeplabv3plus_mobilenet_cityscapes_os16.pth --save_val_results --val_max_size 500 --continue_training
 
 

@@ -29,6 +29,6 @@ tar -xf $TMPDIR/cityscapes_rbf2_rc512/cityscapes_rbf2_rc512.tar.gz -C $TMPDIR/ci
 
 
 
-python main.py --model deeplabv3plus_mobilenet --dataset cityscapes --gpu_id 0  --lr 0.1  --crop_size 512 --batch_size 32 --output_stride 16 --data_root ${TMPDIR}/cityscapes_toy/ --print_interval 500 --val_interval 5000 --total_itrs 150000 --save_val_results --val_max_size 500 
+python main.py --model deeplabv3plus_mobilenet --dataset cityscapes --gpu_id 0  --lr 0.1  --crop_size 512 --batch_size 32 --output_stride 16 --data_root ${TMPDIR}/cityscapes_rbf2_rc512/ --print_interval 500 --val_interval 5000 --total_itrs 150000 --save_val_results --val_max_size 500
 
 
