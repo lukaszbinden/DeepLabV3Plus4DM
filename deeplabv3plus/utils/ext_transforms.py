@@ -18,7 +18,7 @@ class ExtRandomErase(object):
         self.p = p
         self.scale = scale
         self.ratio = ratio
-        self.value = value
+        self.value = [value]
 
     def __call__(self, img, lbl):
         img_c, img_h, img_w = img.shape[-3], img.shape[-2], img.shape[-1]
@@ -44,7 +44,7 @@ class ExtRandomErase(object):
             
         if random.random() < self.p:
             return F.erase(img, i, j, h, w, v), lbl
-            
+
         return img, lbl
 
     def __repr__(self):
