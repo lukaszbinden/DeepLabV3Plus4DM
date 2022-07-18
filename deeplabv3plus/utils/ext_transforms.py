@@ -6,11 +6,51 @@ import random
 import numbers
 import numpy as np
 from PIL import Image
-
+import math
 
 #
 #  Extended Transforms for Semantic Segmentation
 #
+
+class ExtRandomErase(object):
+
+    def __init__(self, p=1.0, scale=(0.1, 0.3), ratio=(0.3, 3.3), value=0):
+        self.p = p
+        self.scale = scale
+        self.ratio = ratio
+        self.value = value
+
+    def __call__(self, img, lbl):
+        img_c, img_h, img_w = img.shape[-3], img.shape[-2], img.shape[-1]
+        area = img_h * img_w
+
+        log_ratio = torch.log(torch.tensor(self.ratio))
+        for _ in range(10):
+            erase_area = area * torch.empty(1).uniform_(self.scale[0], self.scale[1]).item()
+            aspect_ratio = torch.exp(torch.empty(1).uniform_(log_ratio[0], log_ratio[1])).item()
+
+            h = int(round(math.sqrt(erase_area * aspect_ratio)))
+            w = int(round(math.sqrt(erase_area / aspect_ratio)))
+            if not (h < img_h and w < img_w):
+                continue
+
+            if self.value is None:
+                v = torch.empty([img_c, h, w], dtype=torch.float32).normal_()
+            else:
+                v = torch.tensor(self.value)[:, None, None]
+
+            i = torch.randint(0, img_h - h + 1, size=(1,)).item()
+            j = torch.randint(0, img_w - w + 1, size=(1,)).item()
+            
+        if random.random() < self.p:
+            return F.erase(img, i, j, h, w, v), lbl
+            
+        return img, lbl
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(p={})'.format(self.p)
+
+
 class ExtRandomHorizontalFlip(object):
     """Horizontally flip the given PIL Image randomly with a given probability.
 
