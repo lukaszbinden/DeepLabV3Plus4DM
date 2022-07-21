@@ -7,7 +7,7 @@ import numpy as np
 
 from torch.utils import data
 from deeplabv3plus.datasets import VOCSegmentation, Cityscapes
-from deeplabv3plus.utils import ext_transforms as et
+from deeplabv3plus.utils import ext_transforms as et, now_datetime
 from deeplabv3plus.metrics import StreamSegMetrics
 from deeplabv3plus.network import modeling
 
@@ -290,7 +290,7 @@ def main():
             "scheduler_state": scheduler.state_dict(),
             "best_score": best_score,
         }, path)
-        print("Model saved as %s" % path)
+        print(f"[{now_datetime()}] Model saved as %s" % path)
 
     utils.mkdir('checkpoints')
     # Restore
@@ -361,7 +361,7 @@ def main():
             if (cur_itrs) % opts.val_interval == 0:
                 save_ckpt('checkpoints/%slatest_%s_%s_os%d.pth' %
                           (opts.ckpt_name_prefix, opts.model, opts.dataset, opts.output_stride))
-                print("validation...")
+                print(f"[{now_datetime()}] validation...")
                 model.eval()
                 val_score, ret_samples = validate(
                     opts=opts, model=model, loader=val_loader, device=device, metrics=metrics,
