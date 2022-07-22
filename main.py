@@ -7,7 +7,7 @@ import numpy as np
 
 from torch.utils import data
 from deeplabv3plus.datasets import VOCSegmentation, Cityscapes
-from deeplabv3plus.utils import ext_transforms as et
+from deeplabv3plus.utils import ext_transforms as et, now_datetime
 from deeplabv3plus.metrics import StreamSegMetrics
 from deeplabv3plus.network import modeling
 
@@ -41,6 +41,8 @@ def get_argparser():
     parser.add_argument("--separable_conv", action='store_true', default=False,
                         help="apply separable conv to decoder and aspp")
     parser.add_argument("--output_stride", type=int, default=16, choices=[8, 16])
+    parser.add_argument("--ckpt_name_prefix", type=str, default="",
+                        help="optional name prefix for checkpoints (default none)")
 
     # Train Options
     parser.add_argument("--test_only", action='store_true', default=False)
@@ -288,7 +290,7 @@ def main():
             "scheduler_state": scheduler.state_dict(),
             "best_score": best_score,
         }, path)
-        print("Model saved as %s" % path)
+        print(f"[{now_datetime()}] Model saved as %s" % path)
 
     utils.mkdir('checkpoints')
     # Restore
@@ -357,9 +359,9 @@ def main():
                 interval_loss = 0.0
 
             if (cur_itrs) % opts.val_interval == 0:
-                save_ckpt('checkpoints/latest_%s_%s_os%d.pth' %
-                          (opts.model, opts.dataset, opts.output_stride))
-                print("validation...")
+                save_ckpt('checkpoints/%slatest_%s_%s_os%d.pth' %
+                          (opts.ckpt_name_prefix, opts.model, opts.dataset, opts.output_stride))
+                print(f"[{now_datetime()}] validation...")
                 model.eval()
                 val_score, ret_samples = validate(
                     opts=opts, model=model, loader=val_loader, device=device, metrics=metrics,
@@ -367,8 +369,8 @@ def main():
                 print(metrics.to_str(val_score))
                 if val_score['Mean IoU'] > best_score:  # save best model
                     best_score = val_score['Mean IoU']
-                    save_ckpt('checkpoints/best_%s_%s_os%d.pth' %
-                              (opts.model, opts.dataset, opts.output_stride))
+                    save_ckpt('checkpoints/%sbest_%s_%s_os%d.pth' %
+                              (opts.ckpt_name_prefix, opts.model, opts.dataset, opts.output_stride))
 
                 if vis is not None:  # visualize validation score and samples
                     vis.vis_scalar("[Val] Overall Acc", cur_itrs, val_score['Overall Acc'])
