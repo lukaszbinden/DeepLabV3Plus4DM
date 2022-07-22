@@ -12,6 +12,16 @@ import math
 #  Extended Transforms for Semantic Segmentation
 #
 
+
+class GaussianNoise(object):
+    def __init__(self, severity):
+        self.c = [.08, .12, 0.18, 0.26, 0.38][severity - 1]
+
+    def __call__(self, x, lbl):
+        x = np.array(x) / 255.
+        return np.clip(x + np.random.normal(size=x.shape, scale=self.c), 0, 1), lbl
+
+
 class ExtRandomErase(object):
 
     def __init__(self, p=1.0, scale=(0.1, 0.3), ratio=(0.3, 3.3), value=0):
