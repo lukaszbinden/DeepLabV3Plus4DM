@@ -24,7 +24,7 @@ from glob import glob
 from .datasets import Cityscapes
 
 
-def load_deeplabv3plus_cityscapes_trained(ckpt: str = None) -> nn.Module:
+def load_deeplabv3plus_cityscapes_trained(ckpt: str = None, model_name="deeplabv3plus_mobilenet") -> nn.Module:
     num_classes = 19
     # decode_fn = Cityscapes.decode_target
     # os.environ['CUDA_VISIBLE_DEVICES'] = 0
@@ -32,7 +32,7 @@ def load_deeplabv3plus_cityscapes_trained(ckpt: str = None) -> nn.Module:
     # print("Device: %s" % device)
 
     # Set up model (all models are 'constructed at network.modeling)
-    model_name = "deeplabv3plus_mobilenet"
+
     model = modeling.__dict__[model_name](num_classes=num_classes, output_stride=16)
     separable_conv = False
     if separable_conv and 'plus' in model_name:
@@ -40,7 +40,10 @@ def load_deeplabv3plus_cityscapes_trained(ckpt: str = None) -> nn.Module:
     utils.set_bn_momentum(model.backbone, momentum=0.01)
 
     if ckpt is None:
-        ckpt = "/home/lukas/git/DeepLabV3Plus-Pytorch/checkpoints/best_deeplabv3plus_mobilenet_cityscapes_os16.pth"
+        if model_name == "deeplabv3plus_mobilenet":
+            ckpt = "/home/lukas/git/DeepLabV3Plus-Pytorch/checkpoints/best_deeplabv3plus_mobilenet_cityscapes_os16.pth"
+        else:
+            raise Exception(f"a checkpoint must be provided for model {model_name}")
 
     checkpoint = torch.load(ckpt, map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint["model_state"])
