@@ -19,6 +19,8 @@ from PIL import Image
 import matplotlib
 import matplotlib.pyplot as plt
 
+from deeplabv3plus.datasets.ultrasound import training_dataset, validation_dataset
+
 
 def get_argparser():
     parser = argparse.ArgumentParser()
@@ -27,7 +29,7 @@ def get_argparser():
     parser.add_argument("--data_root", type=str, default='./datasets/data',
                         help="path to Dataset")
     parser.add_argument("--dataset", type=str, default='voc',
-                        choices=['voc', 'cityscapes'], help='Name of dataset')
+                        choices=['voc', 'cityscapes', 'ultrasound'], help='Name of dataset')
     parser.add_argument("--num_classes", type=int, default=None,
                         help="num classes (default: None)")
 
@@ -154,6 +156,10 @@ def get_dataset(opts):
                                split='train', transform=train_transform)
         val_dst = Cityscapes(root=os.path.expandvars(opts.data_root),
                              split='val', transform=val_transform)
+
+    if opts.dataset == 'ultrasound':
+        train_dst = training_dataset()
+        val_dst = validation_dataset()
     return train_dst, val_dst
 
 
@@ -218,6 +224,8 @@ def main():
         opts.num_classes = 21
     elif opts.dataset.lower() == 'cityscapes':
         opts.num_classes = 19
+    elif opts.dataset.lower() == 'ultrasound':
+        opts.num_classes = 2
 
     print("Args: --------------------->")
     print(opts)
@@ -243,7 +251,9 @@ def main():
         opts.val_batch_size = 1
 
     train_dst, val_dst = get_dataset(opts)
-    val_dst = data.Subset(val_dst, range(opts.val_max_size))
+    if opts.dataset.lower() != 'ultrasound':
+        val_dst = data.Subset(val_dst, range(opts.val_max_size))
+        
     train_loader = data.DataLoader(
         train_dst, batch_size=opts.batch_size, shuffle=True, num_workers=2,
         drop_last=True)  # drop_last=True to ignore single-image batches.
