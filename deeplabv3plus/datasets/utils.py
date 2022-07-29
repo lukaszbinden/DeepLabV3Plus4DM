@@ -6,6 +6,7 @@ import os
 import os.path
 import hashlib
 import errno
+from torch import Tensor
 from tqdm import tqdm
 
 import imageio
@@ -39,6 +40,9 @@ class TransformedDataset(Dataset, Generic[Tin, Tout]):
                  ) -> None:
         self.source_dataset = source_dataset
         self.transform_func = transform_func
+
+    def decode_target(self, x):
+        return x * 255
 
     def __len__(self):
         return len(self.source_dataset)

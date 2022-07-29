@@ -183,7 +183,7 @@ def validate(opts, model, loader, device, metrics, ret_samples_ids=None):
             outputs = model(images)
             preds = outputs.detach().max(dim=1)[1].cpu().numpy()
             targets = labels.cpu().numpy()
-
+            
             metrics.update(targets, preds)
             if ret_samples_ids is not None and i in ret_samples_ids:  # get vis samples
                 ret_samples.append(

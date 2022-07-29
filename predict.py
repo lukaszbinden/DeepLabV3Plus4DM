@@ -60,6 +60,9 @@ def main():
     elif opts.dataset.lower() == 'cityscapes':
         opts.num_classes = 19
         decode_fn = Cityscapes.decode_target
+    elif opts.dataset.lower() == 'ultrasound':
+        opts.num_classes = 2
+        decode_fn = lambda x: x[0]
 
     os.environ['CUDA_VISIBLE_DEVICES'] = opts.gpu_id
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
