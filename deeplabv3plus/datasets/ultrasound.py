@@ -20,7 +20,7 @@ else:
     BASE_PATH = os.path.expandvars("${TMPDIR}/cityscapes_toy/")
 
 NUM_CLASSES = 2
-RESOLUTION = 128
+RESOLUTION = 256
 
 NORMALIZER = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                   std=[0.229, 0.224, 0.225])
